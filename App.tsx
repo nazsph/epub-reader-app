@@ -500,6 +500,7 @@ export default function App() {
                 setIsControlsVisible(visible)
               }
               showTocButton={false}
+              showProgressBar={true}
               renderHeaderLeft={({ theme }) => (
                 <View style={styles.headerLeftGroup}>
                   {/* Back to Home / Library Button */}
@@ -574,63 +575,64 @@ export default function App() {
 
             {/* Interactive Bottom Progress Bar for Fast Seeking */}
             {isControlsVisible && (
-              <View style={styles.bottomBar}>
-                <BlurView
-                  intensity={50}
-                  tint="light"
-                  style={[
-                    StyleSheet.absoluteFill,
-                    {
-                      backgroundColor: "rgba(255, 255, 255, 0.15)",
-                    },
-                  ]}
-                />
-                <TouchableOpacity
-                  style={styles.seekStepBtn}
-                  onPress={() => handleSeekPercentage(displayPct - 0.05)}
-                >
-                  <Text style={styles.seekStepText}>-5%</Text>
-                </TouchableOpacity>
+              <View></View>
+              // <View style={styles.bottomBar}>
+              //   <BlurView
+              //     intensity={50}
+              //     tint="light"
+              //     style={[
+              //       StyleSheet.absoluteFill,
+              //       {
+              //         backgroundColor: "rgba(255, 255, 255, 0.15)",
+              //       },
+              //     ]}
+              //   />
+              //   <TouchableOpacity
+              //     style={styles.seekStepBtn}
+              //     onPress={() => handleSeekPercentage(displayPct - 0.05)}
+              //   >
+              //     <Text style={styles.seekStepText}>-5%</Text>
+              //   </TouchableOpacity>
 
-                <View
-                  style={styles.progressTrackWrapper}
-                  onLayout={(e) => {
-                    trackWidthRef.current = e.nativeEvent.layout.width;
-                  }}
-                  {...panResponder.panHandlers}
-                >
-                  <View style={styles.progressTrack}>
-                    <View
-                      style={[
-                        styles.progressFill,
-                        {
-                          width: `${Math.max(0, Math.min(100, Math.round(displayPct * 100)))}%`,
-                        },
-                      ]}
-                    />
-                  </View>
-                  {/* Draggable Knob / Thumb (Nokta) */}
-                  <View
-                    style={[
-                      styles.progressThumb,
-                      {
-                        left: `${Math.max(0, Math.min(100, displayPct * 100))}%`,
-                      },
-                    ]}
-                  />
-                </View>
+              //   <View
+              //     style={styles.progressTrackWrapper}
+              //     onLayout={(e) => {
+              //       trackWidthRef.current = e.nativeEvent.layout.width;
+              //     }}
+              //     {...panResponder.panHandlers}
+              //   >
+              //     <View style={styles.progressTrack}>
+              //       <View
+              //         style={[
+              //           styles.progressFill,
+              //           {
+              //             width: `${Math.max(0, Math.min(100, Math.round(displayPct * 100)))}%`,
+              //           },
+              //         ]}
+              //       />
+              //     </View>
+              //     {/* Draggable Knob / Thumb (Nokta) */}
+              //     <View
+              //       style={[
+              //         styles.progressThumb,
+              //         {
+              //           left: `${Math.max(0, Math.min(100, displayPct * 100))}%`,
+              //         },
+              //       ]}
+              //     />
+              //   </View>
 
-                <TouchableOpacity
-                  style={styles.seekStepBtn}
-                  onPress={() => handleSeekPercentage(displayPct + 0.05)}
-                >
-                  <Text style={styles.seekStepText}>+5%</Text>
-                </TouchableOpacity>
+              //   <TouchableOpacity
+              //     style={styles.seekStepBtn}
+              //     onPress={() => handleSeekPercentage(displayPct + 0.05)}
+              //   >
+              //     <Text style={styles.seekStepText}>+5%</Text>
+              //   </TouchableOpacity>
 
-                <Text style={styles.progressInfoText}>
-                  %{Math.round(displayPct * 100)}
-                </Text>
-              </View>
+              //   <Text style={styles.progressInfoText}>
+              //     %{Math.round(displayPct * 100)}
+              //   </Text>
+              // </View>
             )}
           </View>
         ) : (
@@ -875,7 +877,7 @@ export default function App() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: "#fbf0d9",
   },
   readerContainer: { flex: 1, position: "relative" },
 
