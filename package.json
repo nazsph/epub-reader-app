@@ -1,5 +1,5 @@
 {
-  "name": "epub-reader-demo",
+  "name": "epub-reader-app",
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {

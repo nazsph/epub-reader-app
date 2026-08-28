@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "epub-reader-demo",
-    "slug": "epub-reader-demo",
+    "name": "epub-reader-app",
+    "slug": "epub-reader-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
