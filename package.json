@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.17",
     "expo-asset": "~57.0.15",
     "expo-dev-client": "~57.0.16",
@@ -11,7 +13,8 @@
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.3",
-    "react-native-epub-reader": "file:../epub-reader/react-native-epub-reader-0.1.0.tgz",
+    "react-native-epub-reader": "file:../epub-reader/react-native-epub-reader-0.1.2.tgz",
+    "react-native-safe-area-context": "~5.7.0",
     "react-native-webview": "13.16.1"
   },
   "devDependencies": {
