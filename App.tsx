@@ -21,6 +21,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   EpubReader,
+  DEFAULT_THEMES,
   type EpubFlow,
   type EpubLocation,
   type EpubReaderRef,
@@ -81,6 +82,9 @@ export default function App() {
   const [readerTheme, setReaderTheme] = useState<ThemePreset>("sepia");
   const [readerFontSize, setReaderFontSize] = useState<number>(18);
   const [readerFlow, setReaderFlow] = useState<EpubFlow>("paginated");
+
+  const currentTheme = DEFAULT_THEMES[readerTheme] || DEFAULT_THEMES.sepia;
+  const ui = currentTheme.ui;
 
   // Modals state
   const [isTocVisible, setIsTocVisible] = useState(false);
@@ -469,7 +473,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor: ui.cardBg }]}
         edges={["top", "bottom", "left", "right"]}
       >
         {/* Toast Notification */}
@@ -574,66 +578,7 @@ export default function App() {
             />
 
             {/* Interactive Bottom Progress Bar for Fast Seeking */}
-            {isControlsVisible && (
-              <View></View>
-              // <View style={styles.bottomBar}>
-              //   <BlurView
-              //     intensity={50}
-              //     tint="light"
-              //     style={[
-              //       StyleSheet.absoluteFill,
-              //       {
-              //         backgroundColor: "rgba(255, 255, 255, 0.15)",
-              //       },
-              //     ]}
-              //   />
-              //   <TouchableOpacity
-              //     style={styles.seekStepBtn}
-              //     onPress={() => handleSeekPercentage(displayPct - 0.05)}
-              //   >
-              //     <Text style={styles.seekStepText}>-5%</Text>
-              //   </TouchableOpacity>
-
-              //   <View
-              //     style={styles.progressTrackWrapper}
-              //     onLayout={(e) => {
-              //       trackWidthRef.current = e.nativeEvent.layout.width;
-              //     }}
-              //     {...panResponder.panHandlers}
-              //   >
-              //     <View style={styles.progressTrack}>
-              //       <View
-              //         style={[
-              //           styles.progressFill,
-              //           {
-              //             width: `${Math.max(0, Math.min(100, Math.round(displayPct * 100)))}%`,
-              //           },
-              //         ]}
-              //       />
-              //     </View>
-              //     {/* Draggable Knob / Thumb (Nokta) */}
-              //     <View
-              //       style={[
-              //         styles.progressThumb,
-              //         {
-              //           left: `${Math.max(0, Math.min(100, displayPct * 100))}%`,
-              //         },
-              //       ]}
-              //     />
-              //   </View>
-
-              //   <TouchableOpacity
-              //     style={styles.seekStepBtn}
-              //     onPress={() => handleSeekPercentage(displayPct + 0.05)}
-              //   >
-              //     <Text style={styles.seekStepText}>+5%</Text>
-              //   </TouchableOpacity>
-
-              //   <Text style={styles.progressInfoText}>
-              //     %{Math.round(displayPct * 100)}
-              //   </Text>
-              // </View>
-            )}
+            {isControlsVisible && <View></View>}
           </View>
         ) : (
           /* Page 1: Home / Library Screen with Recommendations */
@@ -647,21 +592,72 @@ export default function App() {
                 { paddingVertical: recentBooks.length > 0 ? 28 : "50%" },
               ]}
             >
+              {/* Theme Selector Bar */}
+              <View
+                style={[
+                  styles.themeSelectorBar,
+                  { backgroundColor: ui.activeBg, borderColor: ui.border },
+                ]}
+              >
+                {(["light", "sepia", "dark"] as ThemePreset[]).map(
+                  (themeKey) => {
+                    const isSelected = readerTheme === themeKey;
+                    const themeData = DEFAULT_THEMES[themeKey];
+                    return (
+                      <TouchableOpacity
+                        key={themeKey}
+                        onPress={() => handleThemeChange(themeKey)}
+                        activeOpacity={0.7}
+                        style={[
+                          styles.themeSelectorBtn,
+                          isSelected && [
+                            styles.themeSelectorBtnActive,
+                            {
+                              backgroundColor: ui.cardBg,
+                            },
+                          ],
+                        ]}
+                      >
+                        <Text style={styles.themeSelectorIcon}>
+                          {themeData.icon}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.themeSelectorText,
+                            {
+                              color: isSelected ? ui.text : ui.subtext,
+                              fontWeight: isSelected ? "700" : "500",
+                            },
+                          ]}
+                        >
+                          {themeData.name}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  },
+                )}
+              </View>
+
               <Text style={styles.emptyIcon}>
                 <FontAwesome6
                   name="book-open-reader"
                   size={60}
-                  color="black"
+                  color={ui.text}
                 />{" "}
               </Text>
-              <Text style={styles.emptyTitle}>EPUB Kitap Okuyucu</Text>
-              <Text style={styles.emptySubtitle}>
+              <Text style={[styles.emptyTitle, { color: ui.text }]}>
+                EPUB Kitap Okuyucu
+              </Text>
+              <Text style={[styles.emptySubtitle, { color: ui.subtext }]}>
                 Okumaya başlamak için cihazınızdan yeni bir EPUB dosyası seçin
                 veya daha önce okuduğunuz kitaplardan devam edin.
               </Text>
-              <TouchableOpacity style={styles.emptyButton} onPress={pickBook}>
-                <MaterialIcons name="menu-book" size={22} color={"white"} />
-                <Text style={styles.emptyButtonText}>
+              <TouchableOpacity
+                style={[styles.emptyButton, { backgroundColor: ui.text }]}
+                onPress={pickBook}
+              >
+                <MaterialIcons name="menu-book" size={22} color={ui.cardBg} />
+                <Text style={[styles.emptyButtonText, { color: ui.cardBg }]}>
                   Yeni EPUB Dosyası Seç
                 </Text>
               </TouchableOpacity>
@@ -669,12 +665,19 @@ export default function App() {
 
             {/* Recommended / Recently Read Books from AsyncStorage */}
             {recentBooks.length > 0 && (
-              <View style={styles.recentSection}>
+              <View
+                style={[styles.recentSection, { borderTopColor: ui.border }]}
+              >
                 <View style={styles.recentHeader}>
-                  <Text style={styles.recentSectionTitle}>
+                  <Text style={[styles.recentSectionTitle, { color: ui.text }]}>
                     Kaldığınız Yerden Devam Edin
                   </Text>
-                  <Text style={styles.recentSectionBadge}>
+                  <Text
+                    style={[
+                      styles.recentSectionBadge,
+                      { color: ui.subtext, backgroundColor: ui.activeBg },
+                    ]}
+                  >
                     {recentBooks.length} Kitap
                   </Text>
                 </View>
@@ -683,7 +686,10 @@ export default function App() {
                   {recentBooks.map((item) => (
                     <TouchableOpacity
                       key={item.name}
-                      style={styles.recentCard}
+                      style={[
+                        styles.recentCard,
+                        { backgroundColor: ui.bg, borderColor: ui.border },
+                      ]}
                       activeOpacity={0.7}
                       onPress={() => openRecentBook(item)}
                     >
@@ -692,26 +698,37 @@ export default function App() {
                           <MaterialIcons
                             name="menu-book"
                             size={26}
-                            color={"black"}
+                            color={ui.text}
                           />
                         </Text>
                         <View style={styles.recentCardInfo}>
                           <Text
-                            style={styles.recentBookTitle}
+                            style={[styles.recentBookTitle, { color: ui.text }]}
                             numberOfLines={1}
                           >
                             {item.name}
                           </Text>
-                          <Text style={styles.recentBookMeta}>
+                          <Text
+                            style={[
+                              styles.recentBookMeta,
+                              { color: ui.subtext },
+                            ]}
+                          >
                             {item.lastReadDate} • İlerleme: %
                             {Math.round((item.progression || 0) * 100)}
                           </Text>
                           {/* Mini progress bar */}
-                          <View style={styles.miniProgressTrack}>
+                          <View
+                            style={[
+                              styles.miniProgressTrack,
+                              { backgroundColor: ui.border },
+                            ]}
+                          >
                             <View
                               style={[
                                 styles.miniProgressFill,
                                 {
+                                  backgroundColor: ui.subtext,
                                   width: `${Math.max(4, Math.round((item.progression || 0) * 100))}%`,
                                 },
                               ]}
@@ -728,7 +745,7 @@ export default function App() {
                           <MaterialIcons
                             name="close"
                             size={18}
-                            color="#a08e7e"
+                            color={ui.subtext}
                           />
                         </TouchableOpacity>
                       </View>
@@ -749,22 +766,26 @@ export default function App() {
         >
           <View style={styles.modalOverlay}>
             <SafeAreaView
-              style={styles.drawerContainer}
+              style={[styles.drawerContainer, { backgroundColor: ui.cardBg }]}
               edges={["top", "bottom"]}
             >
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>İçindekiler</Text>
+              <View
+                style={[styles.modalHeader, { borderBottomColor: ui.border }]}
+              >
+                <Text style={[styles.modalTitle, { color: ui.text }]}>
+                  İçindekiler
+                </Text>
                 <Pressable
                   onPress={() => setIsTocVisible(false)}
                   style={styles.closeBtn}
                 >
-                  <MaterialIcons name="close" size={22} color="#746457" />
+                  <MaterialIcons name="close" size={22} color={ui.subtext} />
                 </Pressable>
               </View>
 
               {toc.length === 0 ? (
                 <View style={styles.emptyModalContent}>
-                  <Text style={styles.emptyModalText}>
+                  <Text style={[styles.emptyModalText, { color: ui.subtext }]}>
                     İçindekiler listesi bulunamadı.
                   </Text>
                 </View>
@@ -778,11 +799,17 @@ export default function App() {
                     <TouchableOpacity
                       style={[
                         styles.tocItem,
-                        { paddingLeft: 18 + (item.level || 0) * 16 },
+                        {
+                          paddingLeft: 18 + (item.level || 0) * 16,
+                          borderBottomColor: ui.border,
+                        },
                       ]}
                       onPress={() => goToTocChapter(item.href)}
                     >
-                      <Text style={styles.tocItemText} numberOfLines={2}>
+                      <Text
+                        style={[styles.tocItemText, { color: ui.text }]}
+                        numberOfLines={2}
+                      >
                         {item.label?.trim() || "Bölüm"}
                       </Text>
                     </TouchableOpacity>
@@ -802,19 +829,27 @@ export default function App() {
         >
           <View style={styles.modalOverlay}>
             <SafeAreaView
-              style={styles.drawerContainer}
+              style={[styles.drawerContainer, { backgroundColor: ui.cardBg }]}
               edges={["top", "bottom"]}
             >
-              <View style={styles.modalHeader}>
+              <View
+                style={[styles.modalHeader, { borderBottomColor: ui.border }]}
+              >
                 <View style={styles.modalTitleContainer}>
-                  <MaterialIcons name="bookmarks" size={20} color="#746457" />
-                  <Text style={styles.modalTitle}>Kayıtlı Yer İmleri</Text>
+                  <MaterialIcons
+                    name="bookmarks"
+                    size={20}
+                    color={ui.subtext}
+                  />
+                  <Text style={[styles.modalTitle, { color: ui.text }]}>
+                    Kayıtlı Yer İmleri
+                  </Text>
                 </View>
                 <Pressable
                   onPress={() => setIsBookmarksVisible(false)}
                   style={styles.closeBtn}
                 >
-                  <MaterialIcons name="close" size={22} color="#746457" />
+                  <MaterialIcons name="close" size={22} color={ui.subtext} />
                 </Pressable>
               </View>
 
@@ -823,12 +858,14 @@ export default function App() {
                   <MaterialIcons
                     name="bookmarks"
                     size={42}
-                    color="#746457"
+                    color={ui.subtext}
                   ></MaterialIcons>
-                  <Text style={styles.emptyModalText}>
+                  <Text style={[styles.emptyModalText, { color: ui.text }]}>
                     Henüz bir yer imi eklenmemiş.
                   </Text>
-                  <Text style={styles.emptyModalSubtext}>
+                  <Text
+                    style={[styles.emptyModalSubtext, { color: ui.subtext }]}
+                  >
                     Üst bardaki yer imi butonuna dokunarak okuduğunuz sayfayı
                     yer imlerine ekleyebilirsiniz.
                   </Text>
@@ -838,13 +875,24 @@ export default function App() {
                   data={bookmarks}
                   keyExtractor={(item) => item.id}
                   renderItem={({ item }) => (
-                    <View style={styles.bookmarkItem}>
+                    <View
+                      style={[
+                        styles.bookmarkItem,
+                        { borderBottomColor: ui.border },
+                      ]}
+                    >
                       <TouchableOpacity
                         style={styles.bookmarkContent}
                         onPress={() => goToBookmark(item.cfi)}
                       >
-                        <Text style={styles.bookmarkTitle}>{item.label}</Text>
-                        <Text style={styles.bookmarkSub}>
+                        <Text
+                          style={[styles.bookmarkTitle, { color: ui.text }]}
+                        >
+                          {item.label}
+                        </Text>
+                        <Text
+                          style={[styles.bookmarkSub, { color: ui.subtext }]}
+                        >
                           {item.date} • %
                           {Math.round((item.progression || 0) * 100)}
                         </Text>
@@ -857,7 +905,7 @@ export default function App() {
                         <MaterialIcons
                           name="delete-outline"
                           size={22}
-                          color="#8a7364"
+                          color={ui.subtext}
                         />
                       </TouchableOpacity>
                     </View>
@@ -868,7 +916,7 @@ export default function App() {
           </View>
         </Modal>
 
-        <StatusBar style="auto" />
+        <StatusBar style={readerTheme === "dark" ? "light" : "dark"} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -877,7 +925,7 @@ export default function App() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#fbf0d9",
+    backgroundColor: "transparent",
   },
   readerContainer: { flex: 1, position: "relative" },
 
@@ -1010,6 +1058,38 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   toastText: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
+
+  // Theme Selector Bar
+  themeSelectorBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 4,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginBottom: 16,
+    gap: 4,
+  },
+  themeSelectorBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 5,
+  },
+  themeSelectorBtnActive: {
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+  },
+  themeSelectorIcon: {
+    fontSize: 14,
+  },
+  themeSelectorText: {
+    fontSize: 12,
+  },
 
   // Empty State & Hero
   emptyScrollContent: {
