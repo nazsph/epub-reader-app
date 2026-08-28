@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BlurView } from "expo-blur";
 import {
   Alert,
   BackHandler,
@@ -510,7 +511,7 @@ export default function App() {
                     <MaterialIcons
                       name="arrow-back"
                       size={22}
-                      color={"black"}
+                      color={theme.ui.text}
                     />
                   </Pressable>
 
@@ -574,6 +575,16 @@ export default function App() {
             {/* Interactive Bottom Progress Bar for Fast Seeking */}
             {isControlsVisible && (
               <View style={styles.bottomBar}>
+                <BlurView
+                  intensity={50}
+                  tint="light"
+                  style={[
+                    StyleSheet.absoluteFill,
+                    {
+                      backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    },
+                  ]}
+                />
                 <TouchableOpacity
                   style={styles.seekStepBtn}
                   onPress={() => handleSeekPercentage(displayPct - 0.05)}
@@ -864,7 +875,7 @@ export default function App() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#fbf0d9",
+    backgroundColor: "transparent",
   },
   readerContainer: { flex: 1, position: "relative" },
 
@@ -931,7 +942,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: "#f4ebd0",
+    backgroundColor: "transparent",
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: "#d7c8b7",
     gap: 8,
