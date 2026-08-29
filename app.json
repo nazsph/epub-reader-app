@@ -17,13 +17,18 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.epubreaderdemo"
+      "package": "com.anazs.epubreader"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c3267995-f97e-4ebb-8129-5be29697a09e"
+      }
+    }
   }
 }
