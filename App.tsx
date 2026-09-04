@@ -318,7 +318,7 @@ export default function App() {
         item.progression,
       );
       setBookUri(item.uri);
-      showToast(`📖 ${item.name} açılıyor...`);
+      showToast(`${item.name} açılıyor...`);
     } catch (err) {
       console.error("Failed to open recent book:", err);
     }
@@ -618,9 +618,12 @@ export default function App() {
                           ],
                         ]}
                       >
-                        <Text style={styles.themeSelectorIcon}>
-                          {themeData.icon}
-                        </Text>
+                        <MaterialIcons
+                          name={themeData.icon as any}
+                          size={18}
+                          color={isSelected ? ui.text : ui.subtext}
+                          style={{ marginBottom: 4 }}
+                        />
                         <Text
                           style={[
                             styles.themeSelectorText,
